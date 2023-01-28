@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import com.natiqhaciyef.dailybudgettracker.R
 import com.natiqhaciyef.dailybudgettracker.databinding.FragmentAddDetailsBinding
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class AddDetailsFragment : Fragment() {
     private lateinit var binding: FragmentAddDetailsBinding
     override fun onCreateView(
