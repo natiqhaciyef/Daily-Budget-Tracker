@@ -8,10 +8,10 @@ import com.natiqhaciyef.dailybudgettracker.data.model.ExpenseCategory
 interface AppDao {
 
     @Query("SELECT * FROM ExpenseCategory WHERE date = :date")
-    fun getAllExpenseCategories(date: String)
+    fun getAllExpenseCategories(date: String): List<ExpenseCategory>
 
     @Query("SELECT * FROM BudgetModel WHERE date = :date")
-    fun getBudgetModel(date: String)
+    fun getBudgetModel(date: String): List<BudgetModel>
 
     @Insert
     fun insertCategory(expenseCategory: ExpenseCategory)
