@@ -14,7 +14,7 @@ enum class ExpensesType {
     Pets,
     Services,
     Fun,
-    Fitness,
+    Sport,
     Investment,
     Debt,
     Salary,

@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.natiqhaciyef.dailybudgettracker.data.model.BudgetModel
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpenseCategory
 
-@Database(entities = [ExpenseCategory::class, BudgetModel::class], version = 1)
+@Database(entities = [ExpenseCategory::class, BudgetModel::class], version = 2)
 abstract class AppDatabase : RoomDatabase(){
     abstract fun getDao(): AppDao
 }
