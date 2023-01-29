@@ -39,7 +39,7 @@ class HomeViewModel @Inject constructor(
 
     fun insertBudget(date: String) {
         viewModelScope.launch(Dispatchers.Main) {
-            repo.insertBudget(BudgetModel(0, totalPrice = "0.0", date))
+            repo.insertBudget(BudgetModel(0, totalPrice = 0.0, date))
         }
     }
 

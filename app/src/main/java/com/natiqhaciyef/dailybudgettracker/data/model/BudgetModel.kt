@@ -7,6 +7,6 @@ import androidx.room.PrimaryKey
 data class BudgetModel(
     @PrimaryKey(autoGenerate = true)
     var id: Int,
-    var totalPrice: String,
+    var totalPrice: Double,
     var date: String
 )

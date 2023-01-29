@@ -10,6 +10,6 @@ data class ExpenseCategory(
     var id: Int,
     var image: String,
     var type: ExpensesType,
-    var price: String,
+    var price: Double,
     var date: String,
 )
