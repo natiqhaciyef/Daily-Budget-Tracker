@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.natiqhaciyef.dailybudgettracker.data.model.BudgetModel
+import com.natiqhaciyef.dailybudgettracker.data.model.ExpenseCategory
 import com.natiqhaciyef.dailybudgettracker.data.model.Resource
 import com.natiqhaciyef.dailybudgettracker.data.repository.AppRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +20,7 @@ class HomeViewModel @Inject constructor(
     val repo: AppRepository
 ) : ViewModel() {
     var liveBudgetModel = MutableLiveData<Resource<BudgetModel>>()
+    var liveExpensesCategory = MutableLiveData<Resource<List<ExpenseCategory>>>()
 
     init {
         getBudgetModel()
@@ -31,9 +33,30 @@ class HomeViewModel @Inject constructor(
             if (budget != null) {
                 liveBudgetModel.postValue(Resource.success(budget))
             } else {
-                liveBudgetModel.postValue(Resource.error("Empty budget",null))
+                liveBudgetModel.postValue(Resource.error("Empty budget", null))
                 insertBudget(date)
             }
+        }
+    }
+
+    fun changeCalendar(calendar: Calendar): String {
+        val format = "dd-MM-yyyy"
+        val sdf = SimpleDateFormat(format, Locale.UK)
+        return sdf.format(calendar.time)
+    }
+
+    private fun getAllCategories(date: String) {
+        viewModelScope.launch(Dispatchers.Main) {
+            if (repo.getAllExpenseCategories(date).isNotEmpty())
+                liveExpensesCategory.postValue(Resource.success(repo.getAllExpenseCategories(date)))
+            else
+                liveExpensesCategory.postValue(Resource.success(repo.getAllExpenseCategories(date)))
+        }
+    }
+
+    fun insertCategory(expenseCategory: ExpenseCategory) {
+        viewModelScope.launch(Dispatchers.Main) {
+            repo.insertCategory(expenseCategory)
         }
     }
 
@@ -43,10 +66,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun changeCalendar(calendar: Calendar): String {
-        val format = "dd-MM-yyyy"
-        val sdf = SimpleDateFormat(format, Locale.UK)
-        return sdf.format(calendar.time)
+    fun updateBudget(budgetModel: BudgetModel){
+        viewModelScope.launch(Dispatchers.Main) {
+            repo.updateBudget(budgetModel)
+        }
     }
 }
 
