@@ -1,5 +1,6 @@
 package com.natiqhaciyef.dailybudgettracker.presentation.view
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -14,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.natiqhaciyef.dailybudgettracker.MainActivity
 import com.natiqhaciyef.dailybudgettracker.R
 import com.natiqhaciyef.dailybudgettracker.data.CategoryList
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpenseCategory
@@ -48,7 +50,6 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observeLiveData()
         pieChart()
 
         binding.addCategoryButton.setOnClickListener {
@@ -59,12 +60,15 @@ class HomeFragment : Fragment() {
                 // save categories
                 viewModel.insertCategory(
                     ExpenseCategory(
-                    id = 0,
-                    categoryImage = CategoryList.findCategoryImage(type = category).toInt(),
-                    price = bindingBottomSheet.priceInputText.text.toString().toDouble(),
-                    date = viewModel.changeCalendar(Calendar.getInstance()))
+                        id = 0,
+                        categoryImage = CategoryList.findCategoryImage(type = category),
+                        price = bindingBottomSheet.priceInputText.text.toString().toDouble(),
+                        date = viewModel.changeCalendar(Calendar.getInstance())
+                    )
                 )
-                Toast.makeText(requireContext(), "Success", Toast.LENGTH_SHORT).show()
+                val intent = Intent(requireActivity(), MainActivity::class.java)
+                requireActivity().startActivity(intent)
+                requireActivity().finish()
             }
             bottomSheetDialog.setContentView(bindingBottomSheet.root)
             bottomSheetDialog.show()
@@ -73,7 +77,8 @@ class HomeFragment : Fragment() {
             bindingBottomSheet.categorySelectPanel.setOnItemClickListener { adapterView, _, p, _ ->
                 categories.forEach {
                     if (it.name.lowercase() == adapterView.getItemAtPosition(p).toString()
-                            .lowercase())
+                            .lowercase()
+                    )
                         category = it
                 }
             }
@@ -83,31 +88,18 @@ class HomeFragment : Fragment() {
         for (s in categoryList) {
             totalPrice += s.price
         }
-        loadData(categoryList)
-    }
-
-    private fun observeLiveData() {
-        viewModel.liveBudgetModel.observe(viewLifecycleOwner) {
-            it.data?.let { budgetModel ->
-                totalPrice = budgetModel.totalPrice
-                adapter =
-                    ExpenseCategoryAdapter(
-                        requireContext(),
-                        mutableListOf(),
-                        budgetModel.totalPrice
-                    )
-                binding.categoryRecyclerView.layoutManager =
-                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                binding.categoryRecyclerView.adapter = adapter
-            }
-        }
     }
 
     fun pieChart() {
         viewModel.liveExpensesCategory.observe(viewLifecycleOwner) {
             it.data?.let { categories ->
+                totalPriceCalculator(categories.toMutableList())
                 categoryList = categories.toMutableList()
-                Log.e("JSJAS","$categoryList")
+                adapter = ExpenseCategoryAdapter(requireContext(), categoryList, totalPrice)
+                binding.categoryRecyclerView.adapter = adapter
+                binding.categoryRecyclerView.layoutManager =
+                    LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+                loadData(categoryList)
             }
         }
     }
@@ -120,7 +112,7 @@ class HomeFragment : Fragment() {
                     PieModel(
                         cate.type.name.lowercase(),
                         ((element.price / totalPrice) * 100).toFloat(),
-                        Color.parseColor(cate.color)
+                        cate.color.toInt()
                     )
                 )
             }
@@ -133,6 +125,12 @@ class HomeFragment : Fragment() {
                     Color.GRAY
                 )
             )
+        }
+    }
+
+    private fun totalPriceCalculator(list: MutableList<ExpenseCategory>) {
+        for (element in list) {
+            totalPrice += element.price
         }
     }
 }

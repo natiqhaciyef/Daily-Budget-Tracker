@@ -36,12 +36,12 @@ object CategoryList {
         return list
     }
 
-    fun findCategoryImage(type: ExpensesType): String{
-        var color = ""
+    fun findCategoryImage(type: ExpensesType): Int{
+        var image = 0
         for (element in categoryList){
             if (element.type.name == type.name)
-                color = element.color
+                image = element.image
         }
-        return color
+        return image
     }
 }

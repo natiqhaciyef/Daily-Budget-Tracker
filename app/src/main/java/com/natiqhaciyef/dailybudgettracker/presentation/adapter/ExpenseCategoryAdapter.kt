@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.natiqhaciyef.dailybudgettracker.R
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpenseCategory
 import com.natiqhaciyef.dailybudgettracker.databinding.RecyclerCategoryRowBinding
@@ -27,8 +28,9 @@ class ExpenseCategoryAdapter(
         val view = holder.binding
         val expenseCategory = list[position]
         view.expenseCategory = expenseCategory
-        view.categoryPercentage.text = "${(expenseCategory.price / totalPrice) * 100} %"
-
+        view.categoryPercentage.text = "${String.format("%.2f", (expenseCategory.price / totalPrice) * 100)} %"
+        view.categoryName.text = expenseCategory.findByImage(expenseCategory.categoryImage).type.name
+        view.categoryIcon.setImageResource(expenseCategory.categoryImage)
     }
 
     override fun getItemCount(): Int = list.size
