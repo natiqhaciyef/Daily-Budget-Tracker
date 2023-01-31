@@ -15,24 +15,16 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AddDetailsFragment : Fragment() {
     private lateinit var binding: FragmentAddDetailsBinding
-    private var category = "Non-selected"
-    private var categoryList = CategoryList.categoryList
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_add_details, container, false)
+        binding = FragmentAddDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val categoryAdapter = ArrayAdapter(requireContext(),R.layout.dropdown_item,categoryList)
-        binding.categorySelectPanel.setAdapter(categoryAdapter)
-        binding.categorySelectPanel.setOnItemClickListener { adapterView, _, p, _ ->
-            categoryList.forEach {
-                if (it.name.lowercase() == adapterView.getItemAtPosition(p).toString().lowercase())
-                    category = it.name
-            }
-        }
+
     }
 }

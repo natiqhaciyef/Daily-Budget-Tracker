@@ -24,6 +24,7 @@ class HomeViewModel @Inject constructor(
 
     init {
         getBudgetModel()
+        getAllCategories(changeCalendar(Calendar.getInstance()))
     }
 
     fun getBudgetModel() {
