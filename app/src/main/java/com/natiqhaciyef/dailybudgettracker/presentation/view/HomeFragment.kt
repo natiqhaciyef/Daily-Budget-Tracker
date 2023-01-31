@@ -56,7 +56,7 @@ class HomeFragment : Fragment() {
 //                price = 10.4, date = viewModel.changeCalendar(Calendar.getInstance()), color = "#429145"),
 //        )
 
-        for (s in categoryList){
+        for (s in categoryList) {
             totalPrice += s.price
         }
         loadData(categoryList)
@@ -88,15 +88,24 @@ class HomeFragment : Fragment() {
     }
 
     fun loadData(list: MutableList<ExpenseCategory>) {
-        for (element in list) {
+        if (totalPrice != 0.0) {
+            for (element in list) {
+                pieChart.addPieSlice(
+                    PieModel(
+                        element.type.name.lowercase(),
+                        ((element.price / totalPrice) * 100).toFloat(),
+                        Color.parseColor(element.color)
+                    )
+                )
+            }
+            binding.pieChart.startAnimation()
+        }else{
             pieChart.addPieSlice(
                 PieModel(
-                    element.type.name.lowercase(),
-                    ((element.price / totalPrice) * 100).toFloat(),
-                    Color.parseColor(element.color)
+                    "Empty",
+                    100f,
+                    Color.GRAY)
                 )
-            )
         }
-        binding.pieChart.startAnimation()
     }
 }

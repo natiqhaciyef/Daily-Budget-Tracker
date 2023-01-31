@@ -100,6 +100,9 @@ dependencies {
     //Chart Pie
     implementation 'com.github.blackfizz:eazegraph:1.2.5l@aar'
     implementation 'com.nineoldandroids:library:2.4.0'
+
+    //Slide bar
+    implementation "com.google.android.material:material:1.8.0"
 }
 kapt {
     correctErrorTypes true

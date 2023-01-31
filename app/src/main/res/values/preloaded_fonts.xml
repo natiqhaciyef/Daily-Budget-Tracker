@@ -3,5 +3,7 @@
     <array name="preloaded_fonts" translatable="false">
         <item>@font/galindo</item>
         <item>@font/lemon</item>
+        <item>@font/signika_bold</item>
+        <item>@font/signika_semibold</item>
     </array>
 </resources>
