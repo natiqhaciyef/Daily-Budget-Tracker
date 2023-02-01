@@ -3,21 +3,19 @@ package com.natiqhaciyef.dailybudgettracker.presentation.view
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.natiqhaciyef.dailybudgettracker.MainActivity
 import com.natiqhaciyef.dailybudgettracker.R
 import com.natiqhaciyef.dailybudgettracker.data.CategoryList
+import com.natiqhaciyef.dailybudgettracker.data.model.Category
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpenseCategory
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpensesType
 import com.natiqhaciyef.dailybudgettracker.databinding.FragmentAddDetailsBinding
@@ -25,7 +23,6 @@ import com.natiqhaciyef.dailybudgettracker.databinding.FragmentHomeBinding
 import com.natiqhaciyef.dailybudgettracker.presentation.adapter.ExpenseCategoryAdapter
 import com.natiqhaciyef.dailybudgettracker.presentation.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_add_details.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.eazegraph.lib.models.PieModel
 import java.util.*
@@ -61,7 +58,7 @@ class HomeFragment : Fragment() {
                 viewModel.insertCategory(
                     ExpenseCategory(
                         id = 0,
-                        categoryImage = CategoryList.findCategoryImage(type = category),
+                        categoryImage = CategoryList.findImageByCategory(type = category),
                         price = bindingBottomSheet.priceInputText.text.toString().toDouble(),
                         date = viewModel.changeCalendar(Calendar.getInstance())
                     )
@@ -99,8 +96,9 @@ class HomeFragment : Fragment() {
                 binding.categoryRecyclerView.adapter = adapter
                 binding.categoryRecyclerView.layoutManager =
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-                loadData(categoryList)
             }
+            loadData(categoryList)
+
         }
     }
 
@@ -112,25 +110,38 @@ class HomeFragment : Fragment() {
                     PieModel(
                         cate.type.name.lowercase(),
                         ((element.price / totalPrice) * 100).toFloat(),
-                        cate.color.toInt()
+                        Color.parseColor(cate.color)
                     )
                 )
             }
             binding.pieChart.startAnimation()
         } else {
             pieChart.addPieSlice(
-                PieModel(
-                    "Empty",
-                    100f,
-                    Color.GRAY
-                )
+                PieModel("Empty", 100f, Color.GRAY)
             )
         }
     }
 
     private fun totalPriceCalculator(list: MutableList<ExpenseCategory>) {
-        for (element in list) {
-            totalPrice += element.price
+        val getList = mutableListOf<ExpenseCategory>()
+        val item = ExpenseCategory(id = 0, categoryImage = 1, price = 0.0, date = "")
+
+        for (l in list) {
+            if (
+                item.findByImage(l.categoryImage).type.name.lowercase() == ExpensesType.Income.name.lowercase() ||
+                item.findByImage(l.categoryImage).type.name.lowercase() == ExpensesType.Salary.name.lowercase()
+            )
+                getList.add(l)
+        }
+
+        if (getList.isNotEmpty()) {
+            for (element in getList) {
+                totalPrice += element.price
+            }
+        }else{
+            for (element in list) {
+                totalPrice += element.price
+            }
         }
     }
 }

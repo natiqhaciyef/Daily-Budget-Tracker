@@ -2,30 +2,29 @@ package com.natiqhaciyef.dailybudgettracker.data
 
 import com.natiqhaciyef.dailybudgettracker.R
 import com.natiqhaciyef.dailybudgettracker.data.model.Category
-import com.natiqhaciyef.dailybudgettracker.data.model.ExpenseCategory
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpensesType
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpensesType.*
 
 object CategoryList {
     val categoryList = mutableListOf(
-        Category(R.drawable.food, Food, "${R.color.orange}"),
-        Category(R.drawable.transport, Transport, "${R.color.purple}"),
-        Category(R.drawable.rent, Rental, "${R.color.blue}"),
-        Category(R.drawable.bill, Bill, "${R.color.black}"),
-        Category(R.drawable.home_maintenance, HomeMaintenance, "${R.color.brown}"),
-        Category(R.drawable.vehicle_maintenance, VehicleMaintenance, "${R.color.dark_blue}"),
-        Category(R.drawable.medical, Medical, "${R.color.pink}"),
-        Category(R.drawable.insurance, Insurance, "${R.color.dark_pink}"),
-        Category(R.drawable.education, Education, "${R.color.yellow}"),
-        Category(R.drawable.personal, Personal, "${R.color.dark_yellow}"),
-        Category(R.drawable.pets, Pets, "${R.color.dark_purple}"),
-        Category(R.drawable.service, Services, "${R.color.dark_red}"),
-        Category(R.drawable.`fun`, Fun, "${R.color.light_orange}"),
-        Category(R.drawable.sport, Sport, "${R.color.light_blue}"),
-        Category(R.drawable.investment, Investment, "${R.color.dark_green}"),
-        Category(R.drawable.debt, Debt, "${R.color.light_green}"),
-        Category(R.drawable.salary, Salary, "${R.color.green}"),
-        Category(R.drawable.other_income, Income, "${R.color.red}"),
+        Category(R.drawable.food, Food, "#F16800"),
+        Category(R.drawable.transport, Transport, "#5E35B1"),
+        Category(R.drawable.rent, Rental,"#3C148F"),
+        Category(R.drawable.bill, Bill, "#A173FF"),
+        Category(R.drawable.home_maintenance, HomeMaintenance, "#0088FF"),
+        Category(R.drawable.vehicle_maintenance, VehicleMaintenance, "#5FB2FB"),
+        Category(R.drawable.medical, Medical, "#004785"),
+        Category(R.drawable.insurance, Insurance, "#873D04"),
+        Category(R.drawable.education, Education, "#FFE054"),
+        Category(R.drawable.personal, Personal, "#987C00"),
+        Category(R.drawable.pets, Pets, "#FF0000"),
+        Category(R.drawable.service, Services, "#F84D4D"),
+        Category(R.drawable.`fun`, Fun, "#A521C8"),
+        Category(R.drawable.sport, Sport,"#2E0255"),
+        Category(R.drawable.investment, Investment, "#7CB342"),
+        Category(R.drawable.debt, Debt, "#691580"),
+        Category(R.drawable.salary, Salary,"#429145"),
+        Category(R.drawable.other_income, Income, "#286A2B"),
     )
 
     fun getAllName(): MutableList<ExpensesType>{
@@ -36,7 +35,7 @@ object CategoryList {
         return list
     }
 
-    fun findCategoryImage(type: ExpensesType): Int{
+    fun findImageByCategory(type: ExpensesType): Int{
         var image = 0
         for (element in categoryList){
             if (element.type.name == type.name)
