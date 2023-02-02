@@ -11,7 +11,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 import java.util.*
 import javax.inject.Inject
 
@@ -23,35 +22,34 @@ class HomeViewModel @Inject constructor(
     var liveExpensesCategory = MutableLiveData<Resource<List<ExpenseCategory>>>()
 
     init {
-        getBudgetModel()
-        getAllCategories(changeCalendar(Calendar.getInstance()))
+        getBudgetModel(date = calendarFormatter(Calendar.getInstance()))
+        getAllCategories(calendarFormatter(Calendar.getInstance()))
     }
 
-    fun getBudgetModel() {
-        val date = changeCalendar(Calendar.getInstance())
+    fun getBudgetModel(date: String) {
         viewModelScope.launch(Dispatchers.Main) {
             val budget = repo.getBudgetModel(date)
             if (budget != null) {
-                liveBudgetModel.postValue(Resource.success(budget))
+                liveBudgetModel.value = Resource.success(budget)
             } else {
-                liveBudgetModel.postValue(Resource.error("Empty budget", null))
+                liveBudgetModel.value = Resource.error("Empty budget", null)
                 insertBudget(date)
             }
         }
     }
 
-    fun changeCalendar(calendar: Calendar): String {
+    fun calendarFormatter(calendar: Calendar): String {
         val format = "dd-MM-yyyy"
         val sdf = SimpleDateFormat(format, Locale.UK)
         return sdf.format(calendar.time)
     }
 
-    private fun getAllCategories(date: String) {
+    fun getAllCategories(date: String) {
         viewModelScope.launch(Dispatchers.Main) {
             if (repo.getAllExpenseCategories(date).isNotEmpty())
-                liveExpensesCategory.postValue(Resource.success(repo.getAllExpenseCategories(date)))
+                liveExpensesCategory.value = (Resource.success(repo.getAllExpenseCategories(date)))
             else
-                liveExpensesCategory.postValue(Resource.success(repo.getAllExpenseCategories(date)))
+                liveExpensesCategory.value = (Resource.success(repo.getAllExpenseCategories(date)))
         }
     }
 

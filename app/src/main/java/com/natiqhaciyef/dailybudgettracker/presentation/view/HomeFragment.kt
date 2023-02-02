@@ -15,12 +15,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.natiqhaciyef.dailybudgettracker.MainActivity
 import com.natiqhaciyef.dailybudgettracker.R
 import com.natiqhaciyef.dailybudgettracker.data.CategoryList
-import com.natiqhaciyef.dailybudgettracker.data.model.Category
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpenseCategory
 import com.natiqhaciyef.dailybudgettracker.data.model.ExpensesType
 import com.natiqhaciyef.dailybudgettracker.databinding.FragmentAddDetailsBinding
 import com.natiqhaciyef.dailybudgettracker.databinding.FragmentHomeBinding
+import com.natiqhaciyef.dailybudgettracker.presentation.adapter.DateAdapter
 import com.natiqhaciyef.dailybudgettracker.presentation.adapter.ExpenseCategoryAdapter
+import com.natiqhaciyef.dailybudgettracker.presentation.adapter.SetOnDateClick
 import com.natiqhaciyef.dailybudgettracker.presentation.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -31,6 +32,7 @@ import java.util.*
 class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var adapter: ExpenseCategoryAdapter
+    private lateinit var dateAdapter: DateAdapter
     private var totalPrice = 0.0
     private var category = ExpensesType.Personal
     private var categories = CategoryList.getAllName()
@@ -47,8 +49,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        provideDateRecyclerView()
         pieChart()
-
         binding.addCategoryButton.setOnClickListener {
             val bottomSheetDialog =
                 BottomSheetDialog(requireActivity(), R.style.BottomSheetDialogTheme)
@@ -60,12 +62,10 @@ class HomeFragment : Fragment() {
                         id = 0,
                         categoryImage = CategoryList.findImageByCategory(type = category),
                         price = bindingBottomSheet.priceInputText.text.toString().toDouble(),
-                        date = viewModel.changeCalendar(Calendar.getInstance())
+                        date = viewModel.calendarFormatter(Calendar.getInstance())
                     )
                 )
-                val intent = Intent(requireActivity(), MainActivity::class.java)
-                requireActivity().startActivity(intent)
-                requireActivity().finish()
+                restartScreen()
             }
             bottomSheetDialog.setContentView(bindingBottomSheet.root)
             bottomSheetDialog.show()
@@ -82,9 +82,16 @@ class HomeFragment : Fragment() {
         }
 
 
-        for (s in categoryList) {
-            totalPrice += s.price
-        }
+//        for (s in categoryList) {
+//            totalPrice += s.price
+//        }
+
+    }
+
+    fun restartScreen() {
+        val intent = Intent(requireActivity(), MainActivity::class.java)
+        requireActivity().startActivity(intent)
+        requireActivity().finish()
     }
 
     fun pieChart() {
@@ -98,12 +105,12 @@ class HomeFragment : Fragment() {
                     LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             }
             loadData(categoryList)
-
         }
     }
 
     fun loadData(list: MutableList<ExpenseCategory>) {
         if (totalPrice != 0.0) {
+            pieChart.clearChart()
             for (element in list) {
                 var cate = element.findByImage(element.categoryImage)
                 pieChart.addPieSlice(
@@ -125,7 +132,6 @@ class HomeFragment : Fragment() {
     private fun totalPriceCalculator(list: MutableList<ExpenseCategory>) {
         val getList = mutableListOf<ExpenseCategory>()
         val item = ExpenseCategory(id = 0, categoryImage = 1, price = 0.0, date = "")
-
         for (l in list) {
             if (
                 item.findByImage(l.categoryImage).type.name.lowercase() == ExpensesType.Income.name.lowercase() ||
@@ -133,15 +139,41 @@ class HomeFragment : Fragment() {
             )
                 getList.add(l)
         }
+        totalPrice = 0.0
 
         if (getList.isNotEmpty()) {
             for (element in getList) {
                 totalPrice += element.price
             }
-        }else{
+        } else {
             for (element in list) {
                 totalPrice += element.price
             }
         }
+    }
+
+    private fun provideDateRecyclerView() {
+        val dateList = mutableListOf<String>()
+        val calendar = Calendar.getInstance()
+        for (i in 0..31) {
+            if (i == 0)
+                calendar.add(Calendar.DATE, -0)
+             else
+                calendar.add(Calendar.DATE, -1)
+
+            dateList.add(viewModel.calendarFormatter(calendar))
+        }
+        dateAdapter = DateAdapter(requireContext(), dateList)
+        binding.dateRecyclerView.adapter = dateAdapter
+        binding.dateRecyclerView.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
+        dateAdapter.onClick(object : SetOnDateClick {
+            override fun setOnClick(date: String) {
+                viewModel.getAllCategories(date)
+                pieChart()
+
+            }
+        })
     }
 }
